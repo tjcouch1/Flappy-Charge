@@ -25,12 +25,13 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>grav = .5;
-jumpspd = 3;
+            <string>grav = .2;
+jumpspd = 5;
 
 ymov = 0;
 
 start = false;
+firststart = false;
 
 scr = 0;
 highscr = 0;
@@ -47,6 +48,11 @@ chargespd = 3;
 dead = false;
 
 firststart = true;
+
+spacing = sprite_get_width(spr_tube) * 5;
+
+xprev = x;
+yprev = y;
 </string>
           </argument>
         </arguments>
@@ -79,10 +85,18 @@ firststart = true;
     {
         start = true;
         firststart = true;
+        x = xstart;
+        y = ystart;
+        ymov = 0;
+        charge = 0;
+        dead = false;
+        with (obj_tube)
+            if (object_index != obj_floor)
+                instance_destroy();
     }
 }
 
-if (!firststart &amp;&amp; !dead)
+if (firststart &amp;&amp; start &amp;&amp; !dead)
 {
     if (keyboard_check_pressed(vk_right) || keyboard_check_pressed(ord("C") || mouse_check_button_pressed(mb_right)))
     {
@@ -93,9 +107,10 @@ if (!firststart &amp;&amp; !dead)
         }
     }
     
-    if (!charge)
+    if (charge &lt;= 0)
         ymov += grav;
-    else ymov = 0;
+    else
+        ymov = 0;
     
     charge--;
     difficulty += difficultyinc;
@@ -104,13 +119,16 @@ if (!firststart &amp;&amp; !dead)
 y += ymov;
 
 //move stuff
-with (all)
-    if (object_index != obj_player &amp;&amp; (other.start || object_index == obj_floor))
-    {
-        if (other.charge)
-            x -= chargespd;
-        else x -= spd;
-    }
+if (!dead)
+{
+    with (all)
+        if (object_index != obj_player)
+        {
+            if (other.charge &gt;= 0)
+                x -= other.chargespd;
+            else x -= other.spd;
+        }
+}
 
 if (start)
 {
@@ -119,12 +137,70 @@ if (start)
     {
         var block = instance_find(obj_tube, i);
         if (place_meeting(x, y, block))
-            if (other.charge &gt; 0 &amp;&amp; block.object_index == obj_tube_cracked)
+            if (other.charge &gt; 0 &amp;&amp; br)
                 instance_destroy();
             else player_die();
     }
     
     //create blocks
+    if (difficulty mod spacing == 0)
+    {
+        var opensize = 5;
+        var openspot = irandom(room_height / sprite_get_height(spr_tube) - 12) + 2;
+        var cracked = random(1) &lt; .2;
+        for (var i = 0; i &lt; room_height / sprite_get_height(spr_tube); i++)
+        {
+            if (i &lt; openspot || i &gt;= openspot + opensize)
+            {
+                instance_create(room_width, i * sprite_get_height(spr_tube), obj_tube);
+            }
+            else
+            {
+                instance_create(room_width, i * sprite_get_height(spr_tube), obj_tube_cracked);
+            }
+        }
+    }
+}
+
+xprev = x;
+yprev = y;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>draw_self();
+
+if (!start)
+{
+    draw_set_color(c_red);
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    
+    var strHt = string_height("r");
+    
+    draw_text(room_width / 2, room_height / 2 - strHt * 2, "Flappy Charge");
+    draw_text(room_width / 2, room_height / 2 - strHt * 1, "Up, Space, MouseL: Jump!");
+    draw_text(room_width / 2, room_height / 2, "Right, C, MouseR: Charge!");
+    draw_text(room_width / 2, room_height / 2 + strHt * 1, "High Score: " + string(highscr));
+    draw_text(room_width / 2, room_height / 2 + strHt * 2, "Press Jump to Start!");
 }
 </string>
           </argument>
