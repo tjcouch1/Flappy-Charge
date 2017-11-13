@@ -98,7 +98,7 @@ yprev = y;
 
 if (firststart &amp;&amp; start &amp;&amp; !dead)
 {
-    if (keyboard_check_pressed(vk_right) || keyboard_check_pressed(ord("C") || mouse_check_button_pressed(mb_right)))
+    if (keyboard_check_pressed(vk_right) || keyboard_check_pressed(ord("C")) || mouse_check_button_pressed(mb_right))
     {
         if (charge &lt;= 0)
         {
@@ -137,8 +137,9 @@ if (start)
     {
         var block = instance_find(obj_tube, i);
         if (place_meeting(x, y, block))
-            if (other.charge &gt; 0 &amp;&amp; br)
-                instance_destroy();
+            if (charge &gt; 0 &amp;&amp; block.br)
+                with (block)
+                    instance_destroy();
             else player_die();
     }
     
@@ -154,7 +155,7 @@ if (start)
             {
                 instance_create(room_width, i * sprite_get_height(spr_tube), obj_tube);
             }
-            else
+            else if (cracked)
             {
                 instance_create(room_width, i * sprite_get_height(spr_tube), obj_tube_cracked);
             }
