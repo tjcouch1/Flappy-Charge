@@ -31,7 +31,6 @@ jumpspd = 5;
 ymov = 0;
 
 start = false;
-firststart = false;
 
 scr = 0;
 highscr = 0;
@@ -47,12 +46,17 @@ chargespd = 3;
 
 dead = false;
 
-firststart = true;
+firststart = false;
 
 spacing = sprite_get_width(spr_tube) * 5;
 
-xprev = x;
 yprev = y;
+
+nocharge = room_speed / 2;
+
+xmov = spd;
+
+breakblocks = false;
 </string>
           </argument>
         </arguments>
@@ -96,21 +100,34 @@ yprev = y;
     }
 }
 
-if (firststart &amp;&amp; start &amp;&amp; !dead)
+if (firststart)
 {
-    if (keyboard_check_pressed(vk_right) || keyboard_check_pressed(ord("C")) || mouse_check_button_pressed(mb_right))
+    if (start &amp;&amp; !dead)
     {
-        if (charge &lt;= 0)
+        if (charge &lt; -nocharge &amp;&amp; keyboard_check_pressed(vk_right) || keyboard_check_pressed(ord("C")) || mouse_check_button_pressed(mb_right))
         {
             //start charge
             charge = chargecap;
         }
     }
     
+    if (charge == 1)
+    {
+        if (!breakblocks)
+            player_die();
+        breakblocks = false;
+    }
+    
     if (charge &lt;= 0)
+    {
+        xmov = spd;
         ymov += grav;
+    }
     else
+    {
+        xmov = chargespd;
         ymov = 0;
+    }
     
     charge--;
     difficulty += difficultyinc;
@@ -121,14 +138,23 @@ y += ymov;
 //move stuff
 if (!dead)
 {
+    var gained_point = false;
     with (all)
         if (object_index != obj_player)
         {
-            if (other.charge &gt;= 0)
-                x -= other.chargespd;
-            else x -= other.spd;
+            x -= other.xmov;
+            
+            //points
+            var spr_w = sprite_get_width(sprite_index);
+            if (!gained_point &amp;&amp; object_index != obj_floor &amp;&amp; other.x &gt; x + spr_w / 2 &amp;&amp; other.x - other.xmov &lt;= x + spr_w / 2)
+            {
+                other.scr++;
+                gained_point = true;
+            }
         }
 }
+
+image_angle = point_direction(x - xmov, yprev - (yprev - y) / 2, x, y);
 
 if (start)
 {
@@ -139,7 +165,10 @@ if (start)
         if (place_meeting(x, y, block))
             if (charge &gt; 0 &amp;&amp; block.br)
                 with (block)
+                {
                     instance_destroy();
+                    other.breakblocks = true;
+                }
             else player_die();
     }
     
@@ -162,8 +191,6 @@ if (start)
         }
     }
 }
-
-xprev = x;
 yprev = y;
 </string>
           </argument>
@@ -202,6 +229,14 @@ if (!start)
     draw_text(room_width / 2, room_height / 2, "Right, C, MouseR: Charge!");
     draw_text(room_width / 2, room_height / 2 + strHt * 1, "High Score: " + string(highscr));
     draw_text(room_width / 2, room_height / 2 + strHt * 2, "Press Jump to Start!");
+}
+else
+{
+    draw_set_color(c_red);
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+    
+    draw_text(2, 2, scr);
 }
 </string>
           </argument>
