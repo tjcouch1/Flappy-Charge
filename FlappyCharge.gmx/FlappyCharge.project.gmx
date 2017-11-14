@@ -17,6 +17,8 @@
   <paths name="paths"/>
   <scripts name="scripts">
     <script>scripts\player_die.gml</script>
+    <script>scripts\highscr_save.gml</script>
+    <script>scripts\highscr_load.gml</script>
   </scripts>
   <objects name="objects">
     <object>objects\obj_player</object>

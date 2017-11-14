@@ -57,6 +57,9 @@ nocharge = room_speed / 2;
 xmov = spd;
 
 breakblocks = false;
+
+highscr_file = "high.scr";
+highscr_load();
 </string>
           </argument>
         </arguments>
@@ -130,6 +133,20 @@ if (firststart)
     difficulty += difficultyinc;
 }
 
+//check dead collision
+if (dead)
+{
+    for (var i = 0; i &lt; instance_number(obj_floor); i++)
+    {
+        var flo = instance_find(obj_floor, i);
+        if (place_meeting(x, y, flo))
+        {
+            xmov = 0;
+            ymov = 0;
+        }
+    }
+}
+
 y += ymov;
 
 //move stuff
@@ -186,14 +203,6 @@ if (start)
                 instance_create(room_width, i * sprite_get_height(spr_tube), obj_tube_cracked);
             }
         }
-    }
-}
-
-//check dead collision
-if (dead)
-{
-    for (var i = 0; i &lt; instance_number(obj_tube); i++)
-    {
     }
 }
 

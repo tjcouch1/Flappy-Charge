@@ -6,7 +6,11 @@ start = false;
 ymov = 0;
 
 if (scr > highscr)
+{
     highscr = scr;
+    
+    highscr_save();
+}
 scr = 0;
 
 breakblocks = false;
