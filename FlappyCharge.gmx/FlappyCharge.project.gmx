@@ -20,6 +20,10 @@
     <script>scripts\highscr_save.gml</script>
     <script>scripts\highscr_load.gml</script>
   </scripts>
+  <shaders name="shaders"/>
+  <fonts name="fonts">
+    <font>fonts\font_default</font>
+  </fonts>
   <objects name="objects">
     <object>objects\obj_player</object>
     <object>objects\obj_tube</object>

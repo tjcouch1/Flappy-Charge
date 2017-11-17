@@ -191,7 +191,7 @@ if (start)
     {
         var opensize = 5;
         var openspot = irandom(room_height / sprite_get_height(spr_tube) - 12) + 2;
-        var cracked = random(1) &lt; .2;
+        var cracked = random(1) &lt; .4;
         for (var i = 0; i &lt; room_height / sprite_get_height(spr_tube); i++)
         {
             if (i &lt; openspot || i &gt;= openspot + opensize)
@@ -230,6 +230,8 @@ yprev = y;
           <argument>
             <kind>1</kind>
             <string>draw_self();
+
+draw_set_font(font_default);
 
 if (!start)
 {
